@@ -148,7 +148,7 @@ function onInquirySubmitted(e) {
   });
 
   if (CUSTOMER_EMAIL_ENABLED &&
-      /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
       sheet.getRange(row, sentCol).getValue() !== 'SENT') {
     MailApp.sendEmail({
       to: email,

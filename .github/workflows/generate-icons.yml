@@ -1,0 +1,32 @@
+name: Generate AITS install icons
+on:
+  push:
+    branches: [main]
+    paths:
+      - icon.svg
+      - .github/workflows/generate-icons.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render icon in PNG formats
+        run: |
+          python -m pip install --disable-pip-version-check cairosvg
+          python - <<'PY'
+          import cairosvg
+          for size in (180, 192, 512):
+              cairosvg.svg2png(url='icon.svg',write_to=f'icon-{size}.png',output_width=size,output_height=size)
+          PY
+      - name: Commit icons if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add icon-180.png icon-192.png icon-512.png
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate PNG icons for mobile and desktop installs"
+            git push
+          fi
